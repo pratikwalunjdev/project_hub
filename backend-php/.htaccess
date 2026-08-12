@@ -1,0 +1,15 @@
+RewriteEngine On
+
+# /api/health -> api/health.php
+# /api/projects/5 -> api/projects.php with PATH_INFO=/5
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^api/([a-zA-Z]+)(/.*)?$ api/$1.php$2 [L,QSA]
+
+# Never serve .env directly
+<FilesMatch "^\.env">
+  Require all denied
+</FilesMatch>
+
+# lib/ and scripts/ are internal — not meant to be requested directly
+RewriteRule ^(lib|scripts)/ - [F,L]
