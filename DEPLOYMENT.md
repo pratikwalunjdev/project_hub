@@ -2,7 +2,7 @@
 
 **Target layout:**
 - Frontend (React dashboard): `https://projecthub.thedebuggersjournal.in`
-- Backend (API): `https://api.projecthub.thedebuggersjournal.in`
+- Backend (API): `https://api-projecthub.thedebuggersjournal.in`
 - Database: MySQL, same Hostinger account
 
 Requires a **Business or Cloud** Hostinger plan (Node.js app hosting isn't on Premium/shared-only tiers).
@@ -14,7 +14,9 @@ Requires a **Business or Cloud** Hostinger plan (Node.js app hosting isn't on Pr
 1. Log into **hPanel** for `thedebuggersjournal.in`.
 2. Go to **Domains → Subdomains**.
 3. Create subdomain `projecthub` → this gives you `projecthub.thedebuggersjournal.in`, with its own document root (e.g. `public_html/projecthub.thedebuggersjournal.in`).
-4. Create a second subdomain `api.projecthub` → this gives you `api.projecthub.thedebuggersjournal.in`, with its own document root (e.g. `public_html/api.projecthub.thedebuggersjournal.in`).
+4. Create a second subdomain `api-projecthub` → this gives you `api-projecthub.thedebuggersjournal.in`, with its own document root (e.g. `public_html/api-projecthub.thedebuggersjournal.in`).
+
+   > Hostinger doesn't allow multi-level subdomains (e.g. `api.projecthub.thedebuggersjournal.in`), so this uses a sibling subdomain instead.
 5. Wait for DNS to propagate (usually instant on Hostinger since it manages the zone) — check both resolve under **Domains → DNS Zone**.
 6. Under **Security → SSL**, issue free SSL (Let's Encrypt) for both subdomains. Enable **force HTTPS** for each.
 
@@ -29,13 +31,13 @@ Requires a **Business or Cloud** Hostinger plan (Node.js app hosting isn't on Pr
 
 ---
 
-## 3. Deploy the backend to `api.projecthub.thedebuggersjournal.in`
+## 3. Deploy the backend to `api-projecthub.thedebuggersjournal.in`
 
 ### 3.1 Create the Node.js app
 1. **Advanced → Node.js** → **Create Application**.
 2. Node.js version: 18 or 20 LTS.
-3. **Application root**: point it at the `api.projecthub.thedebuggersjournal.in` document root (or a subfolder inside it, e.g. `backend`).
-4. **Application URL**: select `api.projecthub.thedebuggersjournal.in`.
+3. **Application root**: point it at the `api-projecthub.thedebuggersjournal.in` document root (or a subfolder inside it, e.g. `backend`).
+4. **Application URL**: select `api-projecthub.thedebuggersjournal.in`.
 5. **Application startup file**: `src/server.js`.
 6. Save — Hostinger provisions the app and shows you the deployment path + an "Enter to virtual env" SSH command.
 
@@ -80,7 +82,7 @@ In the Node.js app screen, click **Run NPM Install**, then **Restart**. Hostinge
 
 ### 3.6 Verify
 ```bash
-curl https://api.projecthub.thedebuggersjournal.in/api/health
+curl https://api-projecthub.thedebuggersjournal.in/api/health
 # → {"status":"ok"}
 ```
 If it fails, check **Node.js → your app → Logs** in hPanel — usually a missing env var or a crash on startup.
@@ -93,7 +95,7 @@ If it fails, check **Node.js → your app → Logs** in hPanel — usually a mis
 Before building, create `frontend/.env.production`:
 
 ```
-VITE_API_URL=https://api.projecthub.thedebuggersjournal.in/api
+VITE_API_URL=https://api-projecthub.thedebuggersjournal.in/api
 ```
 
 *(This env var isn't wired into the code yet — it will be used once we replace mock data with real API calls. Safe to add now.)*
@@ -132,7 +134,7 @@ Visit `https://projecthub.thedebuggersjournal.in` — the dashboard should load,
 ## 5. End-to-end check
 
 1. `https://projecthub.thedebuggersjournal.in` loads the dashboard (still on mock data until the API wiring step).
-2. `https://api.projecthub.thedebuggersjournal.in/api/health` returns `{"status":"ok"}`.
+2. `https://api-projecthub.thedebuggersjournal.in/api/health` returns `{"status":"ok"}`.
 3. Browser console on the frontend shows no CORS errors when it eventually calls the API (the `CORS_ORIGIN` env var in step 3.3 must exactly match the frontend's URL, including `https://`).
 
 ---
